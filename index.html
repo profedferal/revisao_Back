@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-Br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz de JavaScript - 3º Técnico</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    .quiz-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #2e8b57;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #276749;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #dff0d8;
+      border: 1px solid #3c763d;
+      border-radius: 5px;
+    }
+    #submitBtn {
+      margin-top: 20px;
+    }
+    #senhaContainer {
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz de JavaScript</h1>
+    <p><strong>Professor:</strong> Edson | <strong>Curso:</strong> 3º Técnico</p>
+
+    <form id="quizForm"></form>
+
+    <div id="senhaContainer">
+      <label for="senha">Digite a senha para enviar as respostas:</label>
+      <input type="password" id="senha" />
+      <button onclick="validarSenha()">Enviar Respostas</button>
+    </div>
+
+    <button id="liberarEnvio" onclick="pedirSenha()">Finalizar e Enviar</button>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const questions = [
+       {
+        question: "O que o seguinte código imprime no console?",
+        code: "let x = 10;\nconsole.log(x);",
+        options: ["undefined", "10", "'x'", "Erro de sintaxe"],
+        answer: 1
+      },
+      {
+        question: "Qual é o tipo da variável criada abaixo?",
+        code: "let nome = 'Maria';",
+        options: ["Boolean", "Number", "String", "Object"],
+        answer: 2
+      },
+      {
+        question: "Qual é o resultado da condição?",
+        code: "if (5 > 3) {\n  console.log('Maior');\n} else {\n  console.log('Menor');\n}",
+        options: ["Maior", "Menor", "undefined", "Erro"],
+        answer: 0
+      },
+      {
+        question: "O que este método faz?",
+        code: "let numeros = [1, 2, 3];\nnumeros.push(4);",
+        options: ["Remove o último elemento", "Adiciona um elemento ao final", "Inverte o array", "Remove o primeiro elemento"],
+        answer: 1
+      },
+      {
+        question: "Qual palavra-chave é usada para criar uma classe em JavaScript?",
+        code: "?",
+        options: ["object", "define", "class", "function"],
+        answer: 2
+      },
+      {
+        question: "O que esse código imprime?",
+        code: "let x = '5';\nlet y = 5;\nconsole.log(x == y);",
+        options: ["false", "true", "undefined", "Erro"],
+        answer: 1
+      },
+      {
+        question: "Qual é a principal diferença entre '==' e '==='?",
+        code: "?",
+        options: ["'===' compara apenas valores", "'==' compara tipos e valores", "'===' compara valores e tipos", "Não há diferença"],
+        answer: 2
+      },
+      {
+        question: "O que o seguinte JSON representa?",
+        code: '{ "nome": "João", "idade": 30 }',
+        options: ["Array de dados", "String", "Objeto JSON", "Função"],
+        answer: 2
+      },
+      {
+        question: "Como acessamos a propriedade 'idade' do JSON abaixo?",
+        code: 'let pessoa = { nome: "Ana", idade: 22 };',
+        options: ["pessoa.idade", "pessoa->idade", "pessoa[idade]", "pessoa:idade"],
+        answer: 0
+      },
+      {
+        question: "Qual é a saída do seguinte código?",
+        code: "let a = 2;\na += 3;\nconsole.log(a);",
+        options: ["2", "3", "5", "undefined"],
+        answer: 2
+      },
+      {
+        question: "Qual será o valor de resultado?",
+        code: "let resultado = 10 > 5 ? 'sim' : 'não';",
+        options: ["sim", "não", "true", "false"],
+        answer: 0
+      },
+      {
+        question: "O que este método faz?",
+        code: "let texto = 'Olá Mundo';\nconsole.log(texto.length);",
+        options: ["Retorna a última letra", "Retorna o tamanho da string", "Converte para maiúsculas", "Nada"],
+        answer: 1
+      },
+      {
+        question: "O que esse código faz?",
+        code: "let num = 10;\nnum--;\nconsole.log(num);",
+        options: ["Imprime 9", "Imprime 10", "Imprime 11", "Erro"],
+        answer: 0
+      },
+      {
+        question: "Como criamos um array vazio em JavaScript?",
+        code: "?",
+        options: ["let arr = {};", "let arr = [];", "let arr = ()", "let arr = <>;"],
+        answer: 1
+      },
+      {
+        question: "Qual método converte um JSON em string?",
+        code: "?",
+        options: ["JSON.toString()", "JSON.parse()", "JSON.stringify()", "toJSON()"],
+        answer: 2
+      },
+      {
+        question: "Qual método converte uma string JSON em objeto?",
+        code: "?",
+        options: ["JSON.parse()", "JSON.stringify()", "JSON.objectify()", "JSON.read()"],
+        answer: 0
+      },
+      {
+        question: "O que será exibido?",
+        code: "let x;\nconsole.log(typeof x);",
+        options: ["undefined", "null", "string", "object"],
+        answer: 0
+      },
+      {
+        question: "Como se chama uma função dentro de uma classe?",
+        code: "?",
+        options: ["Atributo", "Construtor", "Instância", "Método"],
+        answer: 3
+      },
+      {
+        question: "O que significa herança em JavaScript?",
+        code: "?",
+        options: ["Copiar variáveis", "Reutilizar propriedades e métodos de outra classe", "Clonar objetos", "Converter funções em classes"],
+        answer: 1
+      },
+      {
+        question: "Como criamos um objeto literal?",
+        code: "?",
+        options: ["let obj = ();", "let obj = <>;", "let obj = {};", "let obj = []"],
+        answer: 2
+      }
+    ];
+
+    const form = document.getElementById("quizForm");
+    const senhaContainer = document.getElementById("senhaContainer");
+    const liberarEnvio = document.getElementById("liberarEnvio");
+
+    questions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.classList.add("question");
+      div.innerHTML = `
+        <p><strong>${index + 1}. ${q.question}</strong></p>
+        <pre>${q.code}</pre>
+        <div class="options">
+          ${q.options.map((opt, i) => `
+            <label><input type="radio" name="q${index}" value="${i}"> ${opt}</label>
+          `).join('')}
+        </div>
+      `;
+      form.appendChild(div);
+    });
+
+    function pedirSenha() {
+      liberarEnvio.style.display = "none";
+      senhaContainer.style.display = "block";
+    }
+
+    function validarSenha() {
+      const input = document.getElementById("senha").value;
+      const senhaCorreta = "js2025";
+      if (input === senhaCorreta) {
+        submitQuiz();
+        senhaContainer.style.display = "none";
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    function submitQuiz() {
+      let correct = 0;
+      let resultHtml = "<h3>Resultado do Quiz</h3><ul>";
+      questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name='q${i}']:checked`);
+        const answerIndex = selected ? parseInt(selected.value) : -1;
+        const correctAnswer = q.options[q.answer];
+        const userAnswer = answerIndex >= 0 ? q.options[answerIndex] : "Não respondeu";
+        if (answerIndex === q.answer) correct++;
+        resultHtml += `<li><strong>${i + 1}.</strong> Correta: <em>${correctAnswer}</em> | Sua resposta: <em>${userAnswer}</em></li>`;
+      });
+      resultHtml += `</ul><p><strong>Total de acertos:</strong> ${correct} de ${questions.length}</p>`;
+      document.getElementById("result").innerHTML = resultHtml;
+    }
+  </script>
+</body>
+</html>
